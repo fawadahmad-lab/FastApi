@@ -66,8 +66,7 @@ This repository is under active development as I continue learning and building 
 
 ## 🙋‍♂️ About Me
 
-I'm **Fawad Qureshi**, a passionate Machine Learning and MERN Stack developer based in Islamabad, Pakistan. Currently deepening my skills in AI deployment and backend API engineering.
-
+I'm **Fawad Qureshi**
 * 💼 [LinkedIn](https://www.linkedin.com/in/fawad-qureshi-b684aa346/)
 * 🌐 [Portfolio](https://my-portfolio-onebeta-93.vercel.app/)
 * 📬 Contact: [fawadqureshi136@gmail.com](mailto:fawadqureshi136@gmail.com)
