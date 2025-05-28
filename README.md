@@ -32,7 +32,8 @@ This repository will grow to include a range of projects such as:
 - **Scikit-learn**, **Pandas**, **NumPy** – Data science tools
 - **Hugging Face Transformers** – For generative AI & NLP
 - **Langchain / OpenAI API** – For advanced chatbot and LLM use-cases
-- **Docker** *(optional)* – For containerization and deployment
+- **LangGraph / OpenAI API** – For Agentic AI Development 
+- **Docker** / For containerization and deployment
 - **Postman / cURL** – API testing and exploration
 
 ---
@@ -67,7 +68,7 @@ This repository is under active development as I continue learning and building 
 
 I'm **Fawad Qureshi**, a passionate Machine Learning and MERN Stack developer based in Islamabad, Pakistan. Currently deepening my skills in AI deployment and backend API engineering.
 
-* 💼 [LinkedIn](https://www.linkedin.com/in/fawadqureshi-034481216)
+* 💼 [LinkedIn](https://www.linkedin.com/in/fawad-qureshi-b684aa346/)
 * 🌐 [Portfolio](https://my-portfolio-onebeta-93.vercel.app/)
 * 📬 Contact: [fawadqureshi136@gmail.com](mailto:fawadqureshi136@gmail.com)
 
