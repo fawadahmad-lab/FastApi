@@ -1,42 +1,113 @@
-from fastapi import FastAPI , Path ,HTTPException , Query
+from fastapi import FastAPI, Path, HTTPException, Query
+from fastapi.responses import JSONResponse
 import json
-app=FastAPI()
+from typing import Annotated, Literal
+from pydantic import BaseModel, Field, computed_field
+
+app = FastAPI()
 
 
+# ------------------ Utility Functions ------------------
 def load_data():
-    with open('patient.json','r') as f:
-        data=json.load(f)
+    with open('patient.json', 'r') as f:
+        data = json.load(f)
     return data
+
+
+def save_data(data):
+    with open('patient.json', 'w') as f:
+        json.dump(data, f, indent=4)
+
+
+# ------------------ Pydantic Model ------------------
+class Patient(BaseModel):
+    id: Annotated[str, Field(..., description='ID of a patient', examples=['poo1'])]
+    name: Annotated[str, Field(..., description='Name of the patient', examples=['Umer'])]
+    city: Annotated[str, Field(..., description='City of a patient', examples=['Islamabad'])]
+    age: Annotated[int, Field(..., gt=0, lt=120, description='Age of a patient', examples=['24'])]
+    gender: Annotated[Literal['Male', 'Female'], Field(..., description='Gender of a patient', examples=['Male'])]
+    height: Annotated[float, Field(..., gt=0, description='Height of a patient in meters', examples=['1.75'])]
+    weight: Annotated[float, Field(..., gt=0, description='Weight of a patient in kilograms', examples=['78'])]
+
+    @computed_field
+    @property
+    def bmi(self) -> float:
+        return round(self.weight / (self.height ** 2), 2)
+
+    @computed_field
+    @property
+    def verdict(self) -> str:
+        if self.bmi < 18.5:
+            return "under weight"
+        elif self.bmi < 25:
+            return "normal"
+        elif self.bmi < 30:
+            return "overweight"
+        else:
+            return "obese"
+
+
+# ------------------ Routes ------------------
 
 @app.get("/")
 def hello():
-    return {'message':'hello from fastapi'}
+    return {'message': 'Hello from FastAPI'}
 
 
 @app.get('/names')
 def names():
-    return {'name':'Fawad'}
+    return {'name': 'Fawad'}
+
 
 @app.get('/data')
 def view():
-    data=load_data()
+    data = load_data()
     return data
 
+
 @app.get('/patient/{patient_id}')
-def patient(patient_id:str):
-    data=load_data()
+def patient(patient_id: str):
+    data = load_data()
     if patient_id in data:
-        return data[patient_id]
-    return {'error':'patient not found'}
+        # reconstruct into Patient model to compute BMI and verdict
+        patient_obj = Patient(id=patient_id, **data[patient_id])
+        return patient_obj.model_dump() | {"bmi": patient_obj.bmi, "verdict": patient_obj.verdict}
+    raise HTTPException(status_code=404, detail="Patient not found")
 
 
 @app.get('/sort')
-def sort_patients(sort_by:str=Query(...,description='sort on the basis of Height , Weight , or BMI'), order: str=Query('asc',description='sort in asc or desc order')):
-    valid_feilds=['weight','height','bmi']
-    if sort_by not in valid_feilds:
-        raise HTTPException(status_code=400,detail=f'invalid feild selected from {valid_feilds}')
-    data=load_data()
-    sorted_order=True if order =='desc' else False
-    sorted_data=sorted(data.values(),key=lambda x:x.get(sort_by,0),reverse=sorted_order)
-    
-    return sorted_data
+def sort_patients(
+    sort_by: str = Query(..., description='Sort on the basis of weight, height, or bmi'),
+    order: str = Query('asc', description='Sort order: asc or desc')
+):
+    valid_fields = ['weight', 'height', 'bmi']
+    if sort_by not in valid_fields:
+        raise HTTPException(status_code=400, detail=f'Invalid field. Choose from {valid_fields}')
+
+    data = load_data()
+    patient_objs = [Patient(id=pid, **details) for pid, details in data.items()]
+    reverse = order == 'desc'
+
+    sorted_objs = sorted(patient_objs, key=lambda p: getattr(p, sort_by), reverse=reverse)
+
+    return [
+        p.model_dump() | {"bmi": p.bmi, "verdict": p.verdict}
+        for p in sorted_objs
+    ]
+
+@app.post("/create")
+def create_patient(patient: Patient):
+    data = load_data()
+
+    if patient.id in data:
+        raise HTTPException(status_code=400, detail='Patient already exists')
+
+    # Convert cm to meters if height > 3 (heuristic)
+    if patient.height > 3:
+        patient.height = round(patient.height / 100, 3)
+
+    # Save only necessary fields
+    data[patient.id] = patient.model_dump(exclude={"id"})
+
+    save_data(data)
+    return JSONResponse(status_code=202, content={'message': 'Patient created successfully'})
