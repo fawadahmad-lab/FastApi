@@ -11,13 +11,13 @@
     },
     "p002": {
         "name": "Fatima Sheikh",
-        "age": 28,
-        "city": "Karachi",
+        "city": "Islamabad",
+        "age": 23,
         "gender": "Female",
-        "height": 160,
-        "weight": 60,
-        "bmi": 23.4,
-        "verdict": "Normal weight"
+        "height": 160.0,
+        "weight": 85.0,
+        "bmi": 0.0,
+        "verdict": "under weight"
     },
     "p003": {
         "name": "Usman Ali",
@@ -31,13 +31,13 @@
     },
     "p004": {
         "name": "Zara Malik",
-        "age": 22,
         "city": "Rawalpindi",
+        "age": 21,
         "gender": "Female",
-        "height": 155,
-        "weight": 47,
-        "bmi": 19.5,
-        "verdict": "Normal weight"
+        "height": 155.0,
+        "weight": 47.0,
+        "bmi": 0.0,
+        "verdict": "under weight"
     },
     "p005": {
         "name": "Ali Raza",
@@ -78,16 +78,6 @@
         "weight": 85,
         "bmi": 34.0,
         "verdict": "Obese"
-    },
-    "p009": {
-        "name": "Imran Bashir",
-        "age": 42,
-        "city": "Quetta",
-        "gender": "Male",
-        "height": 168,
-        "weight": 72,
-        "bmi": 25.5,
-        "verdict": "Overweight"
     },
     "p010": {
         "name": "Sana Yousaf",
