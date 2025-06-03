@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Insurance Premium Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1e1e2f;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            color: #00ffd5;
+        }
+
+        form {
+            background: #2e2e3f;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 255, 213, 0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        label {
+            display: block;
+            margin-top: 1rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button {
+            margin-top: 2rem;
+            padding: 1rem;
+            width: 100%;
+            background: #00ffd5;
+            color: black;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        #result {
+            margin-top: 2rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #00ff88;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Insurance Premium Predictor</h1>
+    <form id="predictForm">
+        <label>Age: <input type="number" id="age" min="1" max="119" value="30" required /></label>
+        <label>Weight (kg): <input type="number" id="weight" step="0.1" min="1" value="65.0" required /></label>
+        <label>Height (m): <input type="number" id="height" step="0.01" min="0.5" max="2.5" value="1.7"
+                required /></label>
+        <label>Annual Income (LPA): <input type="number" id="income" step="0.1" min="0.1" value="10.0"
+                required /></label>
+        <label>Smoker:
+            <select id="smoker">
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </label>
+        <label>City: <input type="text" id="city" value="Lahore" required /></label>
+        <label>Occupation:
+            <select id="occupation">
+                <option value="retired">Retired</option>
+                <option value="freelancer">Freelancer</option>
+                <option value="student">Student</option>
+                <option value="government_job">Government Job</option>
+                <option value="business_owner">Business Owner</option>
+                <option value="unemployed">Unemployed</option>
+                <option value="private_job">Private Job</option>
+            </select>
+
+        </label>
+        <button type="submit">Predict Premium Category</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('predictForm');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const data = {
+                age: parseInt(document.getElementById("age").value),
+                weight: parseFloat(document.getElementById("weight").value),
+                height: parseFloat(document.getElementById("height").value),
+                income_lpa: parseFloat(document.getElementById("income").value),
+                smoker: document.getElementById("smoker").value === "true",
+                city: document.getElementById("city").value,
+                occupation: document.getElementById("occupation").value
+            };
+
+            try {
+                const res = await fetch("http://localhost:8000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await res.json();
+                if (res.ok) {
+                    document.getElementById("result").innerText = `Predicted Category: ${result.predicted_category}`;
+                } else {
+                    document.getElementById("result").innerText = `Error: ${result.detail || 'Failed to predict.'}`;
+                }
+            } catch (err) {
+                document.getElementById("result").innerText = "Server Error: Could not connect.";
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+
+</html>
